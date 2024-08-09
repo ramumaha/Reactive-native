@@ -1,20 +1,47 @@
-import { TextInput, View, StyleSheet } from "react-native";
+import { useState } from "react";
+import { TextInput, View, StyleSheet, Alert } from "react-native";
 import PrimaryButton from "../components/PrimaryButton.js";
+import Colors from "../constants/colors.js";
 
-function StartGameScreen() {
+function StartGameScreen({ onPickNumber }) {
+  const [enteredNumber, setEnteredNumber] = useState("");
+
+  function numberInputHandler(enteredNumber) {
+    setEnteredNumber(enteredNumber.nativeEvent.text);
+  }
+
+  function resetInputHandler() {
+    setEnteredNumber("");
+  }
+
+  function confirmInputHandler() {
+    const chosenNumber = parseInt(enteredNumber);
+    if (isNaN(chosenNumber) || chosenNumber < 0 || chosenNumber > 99) {
+      Alert.alert("Invalid Number", "Number has to be between 1 and 99", [
+        { text: "Okay", style: "destructive", onPress: resetInputHandler },
+      ]);
+      return;
+    }
+    onPickNumber(chosenNumber);
+  }
+
   return (
     <View style={styles.inputContainer}>
       <TextInput
         style={styles.numberInput}
         maxLength={2}
         keyboardType="number-pad"
+        value={enteredNumber}
+        onChange={numberInputHandler}
       ></TextInput>
       <View style={styles.buttonContainers}>
         <View style={styles.buttonContainer}>
-          <PrimaryButton>Confirm</PrimaryButton>
+          <PrimaryButton onPressExt={confirmInputHandler}>
+            Confirm
+          </PrimaryButton>
         </View>
         <View style={styles.buttonContainer}>
-          <PrimaryButton>Reset</PrimaryButton>
+          <PrimaryButton onPressExt={resetInputHandler}>Reset</PrimaryButton>
         </View>
       </View>
     </View>
@@ -27,7 +54,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 16,
     marginTop: 100,
-    backgroundColor: "#3b021f",
+    backgroundColor: Colors.primary800,
     elevation: 4,
     shadowColor: "black",
     shadowOffset: { width: 0, height: 2 },
@@ -40,9 +67,9 @@ const styles = StyleSheet.create({
     height: 50,
     width: 50,
     fontSize: 32,
-    borderBottomColor: "#ddb52f",
+    borderBottomColor: Colors.accent500,
     borderBottomWidth: 2,
-    color: "#ddb52f",
+    color: Colors.accent500,
     marginVertical: 8,
     fontWeight: "bold",
     textAlign: "center",
